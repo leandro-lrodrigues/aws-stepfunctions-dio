@@ -1,0 +1,80 @@
+{
+  "Comment": "Máquina de estados para fluxo de trabalho AWS baseado na imagem fornecida",
+  "StartAt": "ReceberSolicitacao",
+  "States": {
+    "ReceberSolicitacao": {
+      "Type": "Task",
+      "Resource": "arn:aws:apigateway:us-east-1:execute-api:/restapis/<API_ID>/prod/POST/resource",
+      "Next": "ProcessarWorkflow",
+      "Parameters": {
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "request": "$.input_data"
+        }
+      }
+    },
+    "ProcessarWorkflow": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "ArmazenarNoDynamoDB",
+          "States": {
+            "ArmazenarNoDynamoDB": {
+              "Type": "Task",
+              "Resource": "arn:aws:dynamodb:us-east-1::table/YourDynamoDBTable",
+              "Next": "ConsultarAthena"
+            },
+            "ConsultarAthena": {
+              "Type": "Task",
+              "Resource": "arn:aws:athena:us-east-1::workgroup/primary",
+              "Next": "VisualizarNoQuickSight"
+            },
+            "VisualizarNoQuickSight": {
+              "Type": "Pass",
+              "Result": "Visualization complete",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "ArquivarNoS3Glacier",
+          "States": {
+            "ArquivarNoS3Glacier": {
+              "Type": "Task",
+              "Resource": "arn:aws:s3:::<YOUR_BUCKET_NAME>/path/to/archive",
+              "Next": "GerenciarEventoComEventBridge"
+            },
+            "GerenciarEventoComEventBridge": {
+              "Type": "Task",
+              "Resource": "arn:aws:events:us-east-1::event-bus/default",
+              "Next": "ExecutarModeloML"
+            },
+            "ExecutarModeloML": {
+              "Type": "Task",
+              "Resource": "arn:aws:sagemaker:us-east-1::endpoint/YourMLModelEndpoint",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "EnviarEmailComSES",
+          "States": {
+            "EnviarEmailComSES": {
+              "Type": "Task",
+              "Resource": "arn:aws:ses:us-east-1::identity/your-email@example.com",
+              "End": true
+            }
+          }
+        }
+      ],
+      "Next": "EnviarRespostaParaUsuario"
+    },
+    "EnviarRespostaParaUsuario": {
+      "Type": "Task",
+      "Resource": "arn:aws:apigateway:us-east-1:<API_ID>/path/to/resource",
+      "End": true
+    }
+  }
+}
