@@ -4,7 +4,7 @@
   "States": {
     "ReceberSolicitacao": {
       "Type": "Task",
-      "Resource": "arn:aws:apigateway:us-east-1:execute-api:/restapis/<API_ID>/prod/POST/resource",
+      "Resource": "arn:aws:apigateway:us-east-1::/restapis/https://s8hqeuvmsg.execute-api.us-east-1.amazonaws.com/dev/ProcessarRequisicao/stages/dev/POST/resource"
       "Next": "ProcessarWorkflow",
       "Parameters": {
         "headers": {
@@ -73,7 +73,7 @@
     },
     "EnviarRespostaParaUsuario": {
       "Type": "Task",
-      "Resource": "arn:aws:apigateway:us-east-1:<API_ID>/path/to/resource",
+      "Resource": "arn:aws:apigateway:us-east-1::/restapis/https://s8hqeuvmsg.execute-api.us-east-1.amazonaws.com/dev/ProcessarRequisicao/stages/dev/POST/resource"
       "End": true
     }
   }
