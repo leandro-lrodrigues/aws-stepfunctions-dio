@@ -1,0 +1,43 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "2024-11-13T00:55:58Z",
+    "title" : "API_GEN_AI"
+  },
+  "host" : "s8hqeuvmsg.execute-api.us-east-1.amazonaws.com",
+  "basePath" : "/dev",
+  "schemes" : [ "https" ],
+  "paths" : {
+    "/ProcessarRequisicao" : {
+      "post" : {
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "200 response",
+            "schema" : {
+              "$ref" : "#/definitions/Empty"
+            }
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "type" : "aws",
+          "credentials" : "arn:aws:iam::898208174493:role/APIGateway_Invoke_StepFunctions_Role",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:states:action/APIGateway_Invoke_StepFunctions_Role",
+          "responses" : {
+            "default" : {
+              "statusCode" : "200"
+            }
+          },
+          "passthroughBehavior" : "when_no_match"
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Empty" : {
+      "type" : "object",
+      "title" : "Empty Schema"
+    }
+  }
+}
